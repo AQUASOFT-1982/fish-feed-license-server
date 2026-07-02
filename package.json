@@ -1,0 +1,12 @@
+{
+  "name": "fish-feed-license-server",
+  "version": "1.0.0",
+  "description": "سيرفر ترخيص نظام تقارير مصنع علف الأسماك",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
