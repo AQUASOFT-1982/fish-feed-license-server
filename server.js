@@ -148,7 +148,30 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, 200, { ok: true });
     }
 
-    /* ============== [إدارة] فصل جهاز من كود (لو العميل غيّر جهازه) ============== */
+    /* ============== [إدارة] حذف كود نهائيًا ============== */
+    if (pathName === '/api/admin/delete-key' && req.method === 'POST') {
+      if (!isAdmin(req)) return sendJSON(res, 401, { ok: false, error: 'غير مصرح.' });
+      const { key } = await readBody(req);
+      const license = db.findByKey(key);
+      if (!license) return sendJSON(res, 404, { ok: false, error: 'الكود غير موجود.' });
+      db.deleteLicense(key);
+      return sendJSON(res, 200, { ok: true });
+    }
+
+    /* ============== [إدارة] تعديل بيانات كود ============== */
+    if (pathName === '/api/admin/update-key' && req.method === 'POST') {
+      if (!isAdmin(req)) return sendJSON(res, 401, { ok: false, error: 'غير مصرح.' });
+      const { key, companyName, phone, maxDevices } = await readBody(req);
+      const license = db.findByKey(key);
+      if (!license) return sendJSON(res, 404, { ok: false, error: 'الكود غير موجود.' });
+      if (companyName) license.companyName = companyName;
+      if (phone !== undefined) license.phone = phone;
+      if (maxDevices) license.maxDevices = parseInt(maxDevices) || 1;
+      db.saveLicense(license);
+      return sendJSON(res, 200, { ok: true });
+    }
+
+    /* ============== [إدارة] فصل جهاز من كود ============== */
     if (pathName === '/api/admin/unbind-device' && req.method === 'POST') {
       if (!isAdmin(req)) return sendJSON(res, 401, { ok: false, error: 'غير مصرح.' });
       const { key, deviceId } = await readBody(req);
